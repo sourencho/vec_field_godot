@@ -11,6 +11,7 @@ config_version=4
 [application]
 
 config/name="MultiMeshInstance2D Demo"
+run/main_scene="res://multi_mesh_instance2d_demo.tscn"
 config/icon="res://icon.png"
 
 [physics]
