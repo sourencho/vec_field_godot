@@ -8,6 +8,17 @@ const float squared_threshold = (0.1 * 0.1); //threshold value, squared
 
 varying vec4 custom_data;
 
+//  Function from Iñigo Quiles
+//  https://www.shadertoy.com/view/MsS3Wc
+vec3 hsb2rgb( in vec3 c ){
+    vec3 rgb = clamp(abs(mod(c.x*6.0+vec3(0.0,4.0,2.0),
+                             6.0)-3.0)-1.0,
+                     0.0,
+                     1.0 );
+    rgb = rgb*rgb*(3.0-2.0*rgb);
+    return c.z * mix( vec3(1.0), rgb, c.y);
+}
+
 float udSegment( in vec2 p, in vec2 a, in vec2 b )
 {
     vec2 ba = b-a;
@@ -29,7 +40,7 @@ void fragment()
 	vec2 st = UV.xy;
 	
 	float noise_scale = 10.0;
-	float speed = 60.0;
+	float speed = 40.0;
 	
 	// ====================================
 
@@ -49,7 +60,8 @@ void fragment()
 	float tex_b = texture(NOISE_PATTERN_B, fract((custom_data.xy) / noise_scale + TIME/speed)).x;
 	float tex_c = texture(NOISE_PATTERN_C, fract((custom_data.xy) / noise_scale + TIME/speed)).x;
 	float base = 0.5;
-	vec2 dir = normalize(vec2(cos(2.*PI*tex_a), sin(2.*PI*tex_a)))/2.*tex_b;
+	float angle = 2.*PI*tex_a;
+	vec2 dir = normalize(vec2(cos(angle), sin(angle)))/2.*tex_b;
 	vec2 v1 = vec2(base,base);
 	vec2 v2 = vec2(base+dir.x, base+dir.y);
 	
@@ -58,7 +70,7 @@ void fragment()
 	// Draw lines
 	vec2 p = st_d;
     
-    float th = 0.03 * tex_b;
+    float th = 0.05 * tex_a;
     
 	float s = udSegment(p, v1, v2) - th;
     
@@ -71,15 +83,26 @@ void fragment()
 	
 	// Mix line with unique instance color
 	float c = r; // * box;
-	float a = 1.0;
+	float a = 0.8;
 
-	// ====================================void
+	// ====================================
+	// Make black tansparent
 	if (c <= 0.1) {
 		a = 0.0;
 	}
+	
+	// ====================================
+	
+	float col_angle = mod(TIME/8., 2.*PI);
+	float col_radius = 0.9;
+	vec3 color = hsb2rgb(vec3((col_angle/(2.*PI))+0.5,col_radius,1.0));
+	color.g = 1.0;
+	color.b = 1.0;
 
 	// ====================================
-
-	// COLOR = vec4(c,0,0,1);
-	COLOR = vec4(tex_b*0.1,c*tex_a*tex_b*2.,c*tex_a*2.,a);
+	float amp = 3.;
+	vec3 line_color = vec3(tex_b*0.1,c*tex_a*tex_b*amp,c*tex_a*amp);
+	
+	vec3 out_color = mix(line_color, color, 0.0);
+	COLOR = vec4(out_color,a);
 }
