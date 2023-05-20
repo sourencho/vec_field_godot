@@ -19,7 +19,6 @@ func _do_distribution():
 	var multi_mesh = _multi_mesh_instance.multimesh
 	multi_mesh.mesh = _mesh_instance.mesh
 	var screen_size = get_viewport_rect().size
-	var mesh_size = Vector2(10,10)
 	
 	var width = 900.0
 	var height = 900.0

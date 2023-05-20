@@ -2,7 +2,12 @@ shader_type canvas_item;
 
 uniform sampler2D NOISE_PATTERN_A;
 uniform sampler2D NOISE_PATTERN_B;
-uniform sampler2D NOISE_PATTERN_C;
+
+uniform float strength = 0.8;
+uniform float noise_scale = 6.0;
+uniform float noise_scale_b = 3.0;
+uniform float noise_speed = 90.0;
+uniform float noise_speed_b = 70.0;
 
 const float squared_threshold = (0.1 * 0.1); //threshold value, squared
 
@@ -39,9 +44,6 @@ void fragment()
 	// Get pixel coord
 	vec2 st = UV.xy;
 	
-	float noise_scale = 10.0;
-	float speed = 40.0;
-	
 	// ====================================
 
 	// Break space into parts
@@ -56,12 +58,11 @@ void fragment()
 	// ====================================
 	
 	// Sample texture
-	float tex_a = texture(NOISE_PATTERN_A, fract((custom_data.xy) / noise_scale + TIME/speed)).x;
-	float tex_b = texture(NOISE_PATTERN_B, fract((custom_data.xy) / noise_scale + TIME/speed)).x;
-	float tex_c = texture(NOISE_PATTERN_C, fract((custom_data.xy) / noise_scale + TIME/speed)).x;
+	float tex_a = texture(NOISE_PATTERN_A, fract((custom_data.xy) / noise_scale + TIME/noise_speed)).x;
+	float tex_b = texture(NOISE_PATTERN_B, fract((custom_data.xy) / noise_scale_b - TIME/noise_speed_b)).x;
 	float base = 0.5;
 	float angle = 2.*PI*tex_a;
-	vec2 dir = normalize(vec2(cos(angle), sin(angle)))/2.*tex_b;
+	vec2 dir = normalize(vec2(cos(angle), sin(angle)))/2.*tex_b*strength;
 	vec2 v1 = vec2(base,base);
 	vec2 v2 = vec2(base+dir.x, base+dir.y);
 	
@@ -70,7 +71,7 @@ void fragment()
 	// Draw lines
 	vec2 p = st_d;
     
-    float th = 0.05 * tex_a;
+    float th = 0.04 * tex_a;
     
 	float s = udSegment(p, v1, v2) - th;
     
@@ -83,7 +84,7 @@ void fragment()
 	
 	// Mix line with unique instance color
 	float c = r; // * box;
-	float a = 0.8;
+	float a = 0.9;
 
 	// ====================================
 	// Make black tansparent
@@ -93,16 +94,16 @@ void fragment()
 	
 	// ====================================
 	
-	float col_angle = mod(TIME/8., 2.*PI);
+	float col_angle = mod(TIME/1., 2.*PI);
 	float col_radius = 0.9;
 	vec3 color = hsb2rgb(vec3((col_angle/(2.*PI))+0.5,col_radius,1.0));
 	color.g = 1.0;
 	color.b = 1.0;
 
 	// ====================================
-	float amp = 3.;
-	vec3 line_color = vec3(tex_b*0.1,c*tex_a*tex_b*amp,c*tex_a*amp);
+	float amp = 4.;
+	vec3 line_color = vec3(c*tex_a*0.1,c*tex_a*tex_b*amp,c*tex_a*amp);
 	
-	vec3 out_color = mix(line_color, color, 0.0);
+	vec3 out_color = mix(line_color, color, 0.);
 	COLOR = vec4(out_color,a);
 }

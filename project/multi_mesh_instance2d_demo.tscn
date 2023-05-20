@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://duxgwm0a0i2kv"]
+[gd_scene load_steps=13 format=3 uid="uid://duxgwm0a0i2kv"]
 
 [ext_resource type="Script" path="res://multi_mesh_instance2d_demo.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://xwaur31pmrt5" path="res://icon.png" id="2"]
@@ -8,28 +8,33 @@
 seed = 1
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_hsqoa"]
+seed = 1
+fractal_type = 2
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_dwvxh"]
+width = 1024
+height = 1024
+invert = true
 seamless = true
+seamless_blend_skirt = 0.2
 noise = SubResource("FastNoiseLite_hsqoa")
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_rtw5c"]
+fractal_octaves = 6
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_x1h5r"]
 seamless = true
 noise = SubResource("FastNoiseLite_rtw5c")
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_3ylod"]
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_jo6yf"]
-seamless = true
-noise = SubResource("FastNoiseLite_3ylod")
-
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_af6fg"]
 shader = ExtResource("2_d6elk")
+shader_parameter/strength = 0.8
+shader_parameter/noise_scale = 6.0
+shader_parameter/noise_scale_b = 3.0
+shader_parameter/noise_speed = 90.0
+shader_parameter/noise_speed_b = 70.0
 shader_parameter/NOISE_PATTERN_A = SubResource("NoiseTexture2D_dwvxh")
 shader_parameter/NOISE_PATTERN_B = SubResource("NoiseTexture2D_x1h5r")
-shader_parameter/NOISE_PATTERN_C = SubResource("NoiseTexture2D_jo6yf")
 
 [sub_resource type="ArrayMesh" id="1"]
 _surfaces = [{
@@ -51,6 +56,11 @@ buffer = PackedFloat32Array(1, 0, 0, 52.5667, 0, 1, 0, 461.171, 0.0584074, 0.512
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_7ge31"]
 shader = ExtResource("2_d6elk")
+shader_parameter/strength = 0.8
+shader_parameter/noise_scale = 6.0
+shader_parameter/noise_scale_b = 3.0
+shader_parameter/noise_speed = 90.0
+shader_parameter/noise_speed_b = 70.0
 
 [node name="scene" type="Node2D"]
 script = ExtResource("1")
